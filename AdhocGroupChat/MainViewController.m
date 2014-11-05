@@ -337,6 +337,12 @@ NSString * const kNSDefaultServiceType = @"serviceTypeKey";
     [sheet showFromToolbar:self.navigationController.toolbar];
 }
 
+//Action method when user presses "stream"
+- (IBAction)sendStream:(id)sender
+{
+    [self.sessionContainer startStreamWithName:@"prototypeStream"];
+}
+
 #pragma mark - UIActionSheetDelegate methods
 
 // Override this method to know if user wants to take a new photo or select from the photo library

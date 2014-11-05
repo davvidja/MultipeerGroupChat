@@ -40,6 +40,7 @@
 		7AEDCFF51746993000947F1C /* SessionContainer.m in Sources */ = {isa = PBXBuildFile; fileRef = 7AEDCFF41746993000947F1C /* SessionContainer.m */; };
 		7AEDCFFA1746BD0B00947F1C /* SettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7AEDCFF91746BD0B00947F1C /* SettingsViewController.m */; };
 		7AEDCFFF1746D5FB00947F1C /* MultipeerConnectivity.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7AEDCFFE1746D5FB00947F1C /* MultipeerConnectivity.framework */; };
+		92B0D5491A06F3DD00CFD0DB /* DataStreamController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92B0D5481A06F3DD00CFD0DB /* DataStreamController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -88,6 +89,8 @@
 		7AEDCFF81746BD0B00947F1C /* SettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SettingsViewController.h; sourceTree = "<group>"; };
 		7AEDCFF91746BD0B00947F1C /* SettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingsViewController.m; sourceTree = "<group>"; };
 		7AEDCFFE1746D5FB00947F1C /* MultipeerConnectivity.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MultipeerConnectivity.framework; path = System/Library/Frameworks/MultipeerConnectivity.framework; sourceTree = SDKROOT; };
+		92B0D5471A06F3DC00CFD0DB /* MultipeerGroupChat-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "MultipeerGroupChat-Bridging-Header.h"; sourceTree = "<group>"; };
+		92B0D5481A06F3DD00CFD0DB /* DataStreamController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataStreamController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -209,6 +212,8 @@
 				7AEDCFEB174695EB00947F1C /* MainViewController.m */,
 				7AEDCFF81746BD0B00947F1C /* SettingsViewController.h */,
 				7AEDCFF91746BD0B00947F1C /* SettingsViewController.m */,
+				92B0D5481A06F3DD00CFD0DB /* DataStreamController.swift */,
+				92B0D5471A06F3DC00CFD0DB /* MultipeerGroupChat-Bridging-Header.h */,
 			);
 			name = Controller;
 			sourceTree = "<group>";
@@ -305,6 +310,7 @@
 				7AEDCFD1174695EA00947F1C /* main.m in Sources */,
 				7AEDCFF51746993000947F1C /* SessionContainer.m in Sources */,
 				7AEDCFEC174695EB00947F1C /* MainViewController.m in Sources */,
+				92B0D5491A06F3DD00CFD0DB /* DataStreamController.swift in Sources */,
 				7AE14A1E1778F3EE009C8532 /* MessageView.m in Sources */,
 				7AEDCFFA1746BD0B00947F1C /* SettingsViewController.m in Sources */,
 				7A39F1DE17839810005F51B8 /* ImageView.m in Sources */,
@@ -409,14 +415,18 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "AdhocGroupChat/MultipeerGroupChat-Prefix.pch";
 				INFOPLIST_FILE = "AdhocGroupChat/MultipeerGroupChat-Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = MultipeerGroupChat;
 				PROVISIONING_PROFILE = "";
 				SDKROOT = iphoneos;
+				SWIFT_OBJC_BRIDGING_HEADER = "AdhocGroupChat/MultipeerGroupChat-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				WRAPPER_EXTENSION = app;
 			};
@@ -427,14 +437,17 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "AdhocGroupChat/MultipeerGroupChat-Prefix.pch";
 				INFOPLIST_FILE = "AdhocGroupChat/MultipeerGroupChat-Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = MultipeerGroupChat;
 				PROVISIONING_PROFILE = "";
 				SDKROOT = iphoneos;
+				SWIFT_OBJC_BRIDGING_HEADER = "AdhocGroupChat/MultipeerGroupChat-Bridging-Header.h";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				WRAPPER_EXTENSION = app;
 			};

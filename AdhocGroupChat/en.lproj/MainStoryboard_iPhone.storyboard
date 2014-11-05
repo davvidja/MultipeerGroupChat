@@ -158,7 +158,7 @@
                         </barButtonItem>
                         <barButtonItem style="plain" id="wET-Ym-OHd">
                             <textField key="customView" opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" minimumFontSize="17" id="pVg-1Y-X0B">
-                                <rect key="frame" x="76" y="7" width="208" height="30"/>
+                                <rect key="frame" x="51" y="7" width="142" height="30"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits" returnKeyType="send" enablesReturnKeyAutomatically="YES"/>
@@ -170,6 +170,11 @@
                         <barButtonItem enabled="NO" title="Send" style="done" id="uFM-fS-pJb">
                             <connections>
                                 <action selector="sendMessageTapped:" destination="p9r-Z3-7FD" id="e2R-pE-fD2"/>
+                            </connections>
+                        </barButtonItem>
+                        <barButtonItem title="Stream" id="SM1-C8-ZFD">
+                            <connections>
+                                <action selector="sendStream:" destination="p9r-Z3-7FD" id="eZs-Um-xqL"/>
                             </connections>
                         </barButtonItem>
                     </toolbarItems>

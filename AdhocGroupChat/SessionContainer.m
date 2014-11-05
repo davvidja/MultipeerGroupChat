@@ -50,10 +50,16 @@
 
 #import "SessionContainer.h"
 #import "Transcript.h"
+#import "MultipeerGroupChat-Swift.h"
 
 @interface SessionContainer()
 // Framework UI class for handling incoming invitations
 @property (retain, nonatomic) MCAdvertiserAssistant *advertiserAssistant;
+
+//Properties responsible of managining the data streammed through the NSStreams created with startStream method of MCSession
+@property (retain, nonatomic) DataStreamController *dataOutputStreamController;
+@property (retain, nonatomic) DataStreamController *dataInputStreamController;
+
 @end
 
 @implementation SessionContainer
@@ -145,6 +151,25 @@
     return transcript;
 }
 
+
+//Method for starting a byte stream
+- (void)startStreamWithName:(NSString *)streamName
+{
+    NSOutputStream *outputStream;
+    NSError *error;
+    
+#warning if we have several peers conected, how do we manage it? do we create different outputStreams? Having a dictionary with key the peerID and value the outputStream itself?
+    for (MCPeerID *peerID in _session.connectedPeers) {
+        outputStream = [self.session startStreamWithName:streamName toPeer:peerID error:&error];
+        
+        if (error){
+            NSLog(@"Start stream to peer [%@] completed with Error [%@]", peerID.displayName, error);
+        } else {
+            self.dataOutputStreamController = [[DataStreamController alloc] initForOutputStream:outputStream];
+        }
+    }
+}
+
 #pragma mark - MCSessionDelegate methods
 
 // Override this method to handle changes to peer session state
@@ -210,10 +235,13 @@
     }
 }
 
-// Streaming API not utilized in this sample code
+// MCSession delegate callback when a incoming byte stream is received from remote peer
 - (void)session:(MCSession *)session didReceiveStream:(NSInputStream *)stream withName:(NSString *)streamName fromPeer:(MCPeerID *)peerID
 {
     NSLog(@"Received data over stream with name %@ from peer %@", streamName, peerID.displayName);
+    
+    self.dataInputStreamController = [[DataStreamController alloc] initForInputStream:stream];
+ 
 }
 
 @end

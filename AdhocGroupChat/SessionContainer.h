@@ -64,6 +64,8 @@
 - (Transcript *)sendMessage:(NSString *)message;
 // Method for sending image resources to all connected remote peers.  Returns an progress type transcript for monitoring tranfer
 - (Transcript *)sendImage:(NSURL *)imageUrl;
+//Method for starting a byte stream
+- (void)startStreamWithName:(NSString *)streamName;
 
 @end
 

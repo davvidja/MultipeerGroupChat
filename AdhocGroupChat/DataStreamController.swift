@@ -9,6 +9,12 @@
 import Foundation
 import MultipeerConnectivity
 
+@objc protocol DataStreamControllerDelegate {
+    optional func streamEventReceived (eventCode: NSStreamEvent, inSeesson session: MCSession, fromPeer peerID: MCPeerID, addedComments message: String?)
+}
+
+
+
 class DataStreamController: NSObject, NSStreamDelegate {
     
     var inputStream: NSInputStream?
@@ -17,20 +23,27 @@ class DataStreamController: NSObject, NSStreamDelegate {
     var txData, rxData: NSMutableData?
     var byteIndex = 0
     var bytesRead = 0
+    var delegate : DataStreamControllerDelegate?
+    var session: MCSession
+    var peerID: MCPeerID
    
     
-    init (forInputStream inputStream: NSInputStream) {
+    init (forInputStream inputStream: NSInputStream, session: MCSession, peerID: MCPeerID) {
         self.inputStream = inputStream;
         self.fileManager = NSFileManager()
+        self.session = session
+        self.peerID = peerID
         
         super.init();
         
         settingStream(self.inputStream!)
     }
 
-    init (forOutputStream outputStream: NSOutputStream) {
+    init (forOutputStream outputStream: NSOutputStream, session: MCSession, peerID: MCPeerID) {
         self.outputStream = outputStream;
         self.fileManager = NSFileManager()
+        self.session = session
+        self.peerID = peerID
 
         super.init();
         
@@ -127,6 +140,7 @@ class DataStreamController: NSObject, NSStreamDelegate {
                 NSLog("No buffer!")
             }
             
+            self.delegate!.streamEventReceived!(eventCode, inSeesson: self.session, fromPeer: self.peerID, addedComments: "bytes read: \(len)")
 //            if(!_data) {
 //                _data = [[NSMutableData data] retain];
 //            }
@@ -154,6 +168,7 @@ class DataStreamController: NSObject, NSStreamDelegate {
             
             byteIndex += len
 
+            self.delegate!.streamEventReceived!(eventCode, inSeesson: self.session, fromPeer: self.peerID, addedComments: "bytes written: \(len)")
             
 //            uint8_t *readBytes = (uint8_t *)[_data mutableBytes];
 //            readBytes += byteIndex; // instance variable to move pointer
@@ -167,9 +182,11 @@ class DataStreamController: NSObject, NSStreamDelegate {
             
         case NSStreamEvent.EndEncountered:
             println("End encountered event received")
+            self.delegate!.streamEventReceived!(eventCode, inSeesson: self.session, fromPeer: self.peerID, addedComments: nil)
             
         case NSStreamEvent.ErrorOccurred:
             println("Error ocurred event received")
+            self.delegate!.streamEventReceived!(eventCode, inSeesson: self.session, fromPeer: self.peerID, addedComments: nil)
 
         default:
             println("Event received but not treated")

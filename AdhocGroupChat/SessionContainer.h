@@ -47,13 +47,13 @@
  */
 
 #import <Foundation/Foundation.h>
+#import "MultipeerGroupChat-Swift.h"
 
 @class Transcript;
 
 @protocol SessionContainerDelegate;
-
 // Container utility class for managing MCSession state, API calls, and it's delegate callbacks
-@interface SessionContainer : NSObject <MCSessionDelegate>
+@interface SessionContainer : NSObject <MCSessionDelegate, DataStreamControllerDelegate>
 
 @property (readonly, nonatomic) MCSession *session;
 @property (assign, nonatomic) id<SessionContainerDelegate> delegate;

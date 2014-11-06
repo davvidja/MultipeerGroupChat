@@ -50,7 +50,7 @@
 
 #import "SessionContainer.h"
 #import "Transcript.h"
-#import "MultipeerGroupChat-Swift.h"
+
 
 @interface SessionContainer()
 // Framework UI class for handling incoming invitations
@@ -165,7 +165,9 @@
         if (error){
             NSLog(@"Start stream to peer [%@] completed with Error [%@]", peerID.displayName, error);
         } else {
-            self.dataOutputStreamController = [[DataStreamController alloc] initForOutputStream:outputStream];
+            self.dataOutputStreamController = [[DataStreamController alloc] initForOutputStream:outputStream session:self.session peerID:peerID];
+            
+            self.dataOutputStreamController.delegate = self;
         }
     }
 }
@@ -240,8 +242,45 @@
 {
     NSLog(@"Received data over stream with name %@ from peer %@", streamName, peerID.displayName);
     
-    self.dataInputStreamController = [[DataStreamController alloc] initForInputStream:stream];
- 
+    self.dataInputStreamController = [[DataStreamController alloc] initForInputStream:stream session:session peerID:peerID];
+    self.dataInputStreamController.delegate = self;
 }
+
+#pragma mark - DataStreamControllerDelegate methods
+- (void) streamEventReceived:(NSStreamEvent)eventCode inSeesson:(MCSession *)session fromPeer:(MCPeerID *)peerID addedComments:(NSString *)message
+{
+    switch (eventCode) {
+        case NSStreamEventHasSpaceAvailable:
+        {
+            
+            NSMutableString *finalMessage = [[NSMutableString alloc] init];
+            
+            [finalMessage appendString:@"Space availabe in Stream, writing "];
+            [finalMessage appendString:message];
+            
+            Transcript *transcript = [[Transcript alloc] initWithPeerID:peerID message:finalMessage direction:TRANSCRIPT_DIRECTION_RECEIVE];
+            [self.delegate receivedTranscript:transcript];
+
+            break;
+        }
+        case NSStreamEventHasBytesAvailable:
+        {
+            NSMutableString *finalMessage = [[NSMutableString alloc] init];
+            
+            [finalMessage appendString:@"Bytes availabes in Stream, reading "];
+            [finalMessage appendString:message];
+            
+            Transcript *transcript = [[Transcript alloc] initWithPeerID:peerID message:finalMessage direction:TRANSCRIPT_DIRECTION_RECEIVE];
+            [self.delegate receivedTranscript:transcript];
+
+            break;
+        }
+        default:
+            break;
+    }
+}
+
+//optional func streamEventReceived (eventCode: NSStreamEvent)
+
 
 @end

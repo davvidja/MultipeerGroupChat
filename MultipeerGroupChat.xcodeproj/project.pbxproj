@@ -145,6 +145,7 @@
 				7AEDCFD3174695EA00947F1C /* AppDelegate.h */,
 				7AEDCFD4174695EA00947F1C /* AppDelegate.m */,
 				7AEDCFD0174695EA00947F1C /* main.m */,
+				92B0D5471A06F3DC00CFD0DB /* MultipeerGroupChat-Bridging-Header.h */,
 				7A3DD79217A716DD00A89D93 /* Images.xcassets */,
 				7AEDCFCB174695EA00947F1C /* Supporting Files */,
 			);
@@ -213,7 +214,6 @@
 				7AEDCFF81746BD0B00947F1C /* SettingsViewController.h */,
 				7AEDCFF91746BD0B00947F1C /* SettingsViewController.m */,
 				92B0D5481A06F3DD00CFD0DB /* DataStreamController.swift */,
-				92B0D5471A06F3DC00CFD0DB /* MultipeerGroupChat-Bridging-Header.h */,
 			);
 			name = Controller;
 			sourceTree = "<group>";

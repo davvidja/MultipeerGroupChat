@@ -19,41 +19,43 @@ class DataStreamController: NSObject, NSStreamDelegate {
     
     var inputStream: NSInputStream?
     var outputStream: NSOutputStream?
-    var fileManager: NSFileManager
+    var fileManager: NSFileManager = NSFileManager ()
     var txData, rxData: NSMutableData?
     var byteIndex = 0
     var bytesRead = 0
     var delegate : DataStreamControllerDelegate?
-    var session: MCSession
-    var peerID: MCPeerID
+    var session: MCSession = MCSession()
+    var peerID: MCPeerID = MCPeerID()
    
 //Initialization methods
     init (forInputStream inputStream: NSInputStream, session: MCSession, peerID: MCPeerID) {
-        self.inputStream = inputStream;
-        self.fileManager = NSFileManager()
+        super.init()
+
+        self.inputStream = inputStream
+        //self.fileManager = NSFileManager()
         self.session = session
         self.peerID = peerID
         
-        super.init();
         
-        settingStream(self.inputStream!)
-        
-        println("inputStream has bytes available? \(self.inputStream!.hasBytesAvailable)")
-        println("inputStream has bytes available? \(self.inputStream!.hasBytesAvailable)")
+        //settingStream(self.inputStream!)
     }
 
     init (forOutputStream outputStream: NSOutputStream, session: MCSession, peerID: MCPeerID) {
-        self.outputStream = outputStream;
-        self.fileManager = NSFileManager()
+        super.init()
+
+        self.outputStream = outputStream
+        //self.fileManager = NSFileManager()
         self.session = session
         self.peerID = peerID
 
-        super.init();
         
-        settingStream(self.outputStream!)
+        //settingStream(self.outputStream!)
         self.txData = getData()
     }
 
+    func openStream (stream: NSStream){
+        stream.open()
+    }
     
     private func settingStream (varStream: NSStream){
         //Step 1: setting the delegate
@@ -62,8 +64,11 @@ class DataStreamController: NSObject, NSStreamDelegate {
         //Step 2: setting the handling of stream events
         varStream.scheduleInRunLoop(NSRunLoop.currentRunLoop(), forMode: NSDefaultRunLoopMode)
         
+        
+        //NSRunLoop.currentRunLoop().run();
+        
         //Step 3: opening the stream
-        varStream.open()
+        //varStream.open()
     }
     
     private func getData() -> NSMutableData? {
@@ -137,7 +142,7 @@ class DataStreamController: NSObject, NSStreamDelegate {
             var buffer = UnsafeMutablePointer<UInt8>.alloc(1024)
             
             var len: Int = 0
-            len = self.inputStream!.read(buffer, maxLength: 1024)
+            len = (aStream as NSInputStream).read(buffer, maxLength: 1024)
             
             if (len != 0) {
                 self.rxData!.appendBytes(buffer, length: len)
@@ -170,7 +175,7 @@ class DataStreamController: NSObject, NSStreamDelegate {
             var dataLen: Int = self.txData!.length
             var len: Int = ((dataLen - byteIndex) >= 1024) ? 1024: (dataLen - byteIndex)
             
-            self.outputStream!.write(buffer, maxLength: len)
+            (aStream as NSOutputStream).write(buffer, maxLength: len)
             
             byteIndex += len
 

@@ -168,6 +168,10 @@
             self.dataOutputStreamController = [[DataStreamController alloc] initForOutputStream:outputStream session:self.session peerID:peerID];
             
             self.dataOutputStreamController.delegate = self;
+            [outputStream setDelegate:self.dataOutputStreamController];
+            [outputStream scheduleInRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
+            
+            [self.dataOutputStreamController.outputStream open];
             
             Transcript *transcript = [[Transcript alloc] initWithPeerID:peerID message:@"OutputStream received" direction:TRANSCRIPT_DIRECTION_LOCAL];
             [self.delegate receivedTranscript:transcript];
@@ -248,11 +252,14 @@
     
     self.dataInputStreamController = [[DataStreamController alloc] initForInputStream:stream session:session peerID:peerID];
     self.dataInputStreamController.delegate = self;
-    
-    [self.dataInputStreamController.inputStream open];
+    [stream setDelegate:self.dataInputStreamController];
+    [stream scheduleInRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
+
     
     Transcript *transcript = [[Transcript alloc] initWithPeerID:peerID message:@"InputStream received" direction:TRANSCRIPT_DIRECTION_LOCAL];
     [self.delegate receivedTranscript:transcript];
+
+    [self.dataInputStreamController.inputStream open];
 
 }
 

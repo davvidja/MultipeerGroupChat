@@ -27,7 +27,7 @@ class DataStreamController: NSObject, NSStreamDelegate {
     var session: MCSession
     var peerID: MCPeerID
    
-    
+//Initialization methods
     init (forInputStream inputStream: NSInputStream, session: MCSession, peerID: MCPeerID) {
         self.inputStream = inputStream;
         self.fileManager = NSFileManager()
@@ -37,6 +37,9 @@ class DataStreamController: NSObject, NSStreamDelegate {
         super.init();
         
         settingStream(self.inputStream!)
+        
+        println("inputStream has bytes available? \(self.inputStream!.hasBytesAvailable)")
+        println("inputStream has bytes available? \(self.inputStream!.hasBytesAvailable)")
     }
 
     init (forOutputStream outputStream: NSOutputStream, session: MCSession, peerID: MCPeerID) {
@@ -52,7 +55,7 @@ class DataStreamController: NSObject, NSStreamDelegate {
     }
 
     
-    func settingStream (varStream: NSStream){
+    private func settingStream (varStream: NSStream){
         //Step 1: setting the delegate
         varStream.delegate = self
         
@@ -63,11 +66,11 @@ class DataStreamController: NSObject, NSStreamDelegate {
         varStream.open()
     }
     
-    func getData() -> NSMutableData? {
+    private func getData() -> NSMutableData? {
         return self.syncReadContentOfTxFile()
     }
     
-    func syncReadContentOfTxFile () -> NSMutableData? {
+    private func syncReadContentOfTxFile () -> NSMutableData? {
         var data: NSMutableData?
         
         let result = self.createTxFile()
@@ -80,7 +83,8 @@ class DataStreamController: NSObject, NSStreamDelegate {
     }
     
     //The following function is just for the prototype: creates the file 'file.tx' that would be transmited.
-    func createTxFile() -> (successed: Bool, fileURL: NSURL?) {
+    //According with the stack model, that functionalities should not be here
+    private func createTxFile() -> (successed: Bool, fileURL: NSURL?) {
         var fileURLs = fileManager.URLsForDirectory(NSSearchPathDirectory.ApplicationSupportDirectory, inDomains: NSSearchPathDomainMask.UserDomainMask)
         var fileURL: NSURL?
         var filePath: NSString?
@@ -124,6 +128,8 @@ class DataStreamController: NSObject, NSStreamDelegate {
         switch eventCode {
         case NSStreamEvent.OpenCompleted:
             println("Open completed event received")
+            self.delegate!.streamEventReceived!(eventCode, inSeesson: self.session, fromPeer: self.peerID, addedComments: nil)
+
         
         case NSStreamEvent.HasBytesAvailable:
             println("Bytes available event received")
@@ -182,11 +188,11 @@ class DataStreamController: NSObject, NSStreamDelegate {
             
         case NSStreamEvent.EndEncountered:
             println("End encountered event received")
-            self.delegate!.streamEventReceived!(eventCode, inSeesson: self.session, fromPeer: self.peerID, addedComments: nil)
+            self.delegate!.streamEventReceived!(eventCode, inSeesson: self.session, fromPeer: self.peerID, addedComments: "Stream end encountered")
             
         case NSStreamEvent.ErrorOccurred:
             println("Error ocurred event received")
-            self.delegate!.streamEventReceived!(eventCode, inSeesson: self.session, fromPeer: self.peerID, addedComments: nil)
+            self.delegate!.streamEventReceived!(eventCode, inSeesson: self.session, fromPeer: self.peerID, addedComments: "Stream error ocurred")
 
         default:
             println("Event received but not treated")

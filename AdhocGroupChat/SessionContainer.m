@@ -168,6 +168,10 @@
             self.dataOutputStreamController = [[DataStreamController alloc] initForOutputStream:outputStream session:self.session peerID:peerID];
             
             self.dataOutputStreamController.delegate = self;
+            
+            Transcript *transcript = [[Transcript alloc] initWithPeerID:peerID message:@"OutputStream received" direction:TRANSCRIPT_DIRECTION_LOCAL];
+            [self.delegate receivedTranscript:transcript];
+
         }
     }
 }
@@ -204,7 +208,7 @@
 {
     NSLog(@"Start receiving resource [%@] from peer %@ with progress [%@]", resourceName, peerID.displayName, progress);
     // Create a resource progress transcript
-    Transcript *transcript = [[Transcript alloc] initWithPeerID:peerID imageName:resourceName progress:progress direction:TRANSCRIPT_DIRECTION_RECEIVE];
+    Transcript *transcript = [[Transcript alloc] initWithPeerID:peerID imageName:resourceName progress:progress direction:TRANSCRIPT_DIRECTION_LOCAL];
     // Notify the UI delegate
     [self.delegate receivedTranscript:transcript];
 }
@@ -244,12 +248,34 @@
     
     self.dataInputStreamController = [[DataStreamController alloc] initForInputStream:stream session:session peerID:peerID];
     self.dataInputStreamController.delegate = self;
+    
+    [self.dataInputStreamController.inputStream open];
+    
+    Transcript *transcript = [[Transcript alloc] initWithPeerID:peerID message:@"InputStream received" direction:TRANSCRIPT_DIRECTION_LOCAL];
+    [self.delegate receivedTranscript:transcript];
+
 }
 
 #pragma mark - DataStreamControllerDelegate methods
 - (void) streamEventReceived:(NSStreamEvent)eventCode inSeesson:(MCSession *)session fromPeer:(MCPeerID *)peerID addedComments:(NSString *)message
 {
+    if (message == nil) {
+        message = @"";
+    }
+    
     switch (eventCode) {
+        case NSStreamEventOpenCompleted:
+        {
+            NSMutableString *finalMessage = [[NSMutableString alloc] init];
+            
+            [finalMessage appendString:@"Stream open is completed"];
+            [finalMessage appendString:message];
+            
+            Transcript *transcript = [[Transcript alloc] initWithPeerID:peerID message:finalMessage direction:TRANSCRIPT_DIRECTION_LOCAL];
+            [self.delegate receivedTranscript:transcript];
+            
+            break;
+        }
         case NSStreamEventHasSpaceAvailable:
         {
             
@@ -258,7 +284,7 @@
             [finalMessage appendString:@"Space availabe in Stream, writing "];
             [finalMessage appendString:message];
             
-            Transcript *transcript = [[Transcript alloc] initWithPeerID:peerID message:finalMessage direction:TRANSCRIPT_DIRECTION_RECEIVE];
+            Transcript *transcript = [[Transcript alloc] initWithPeerID:peerID message:finalMessage direction:TRANSCRIPT_DIRECTION_LOCAL];
             [self.delegate receivedTranscript:transcript];
 
             break;
@@ -270,13 +296,23 @@
             [finalMessage appendString:@"Bytes availabes in Stream, reading "];
             [finalMessage appendString:message];
             
-            Transcript *transcript = [[Transcript alloc] initWithPeerID:peerID message:finalMessage direction:TRANSCRIPT_DIRECTION_RECEIVE];
+            Transcript *transcript = [[Transcript alloc] initWithPeerID:peerID message:finalMessage direction:TRANSCRIPT_DIRECTION_LOCAL];
             [self.delegate receivedTranscript:transcript];
 
             break;
         }
         default:
+        {
+            NSMutableString *finalMessage = [[NSMutableString alloc] init];
+            
+            [finalMessage appendString:@"Stream generic message: "];
+            [finalMessage appendString:message];
+            
+            Transcript *transcript = [[Transcript alloc] initWithPeerID:peerID message:finalMessage direction:TRANSCRIPT_DIRECTION_LOCAL];
+            [self.delegate receivedTranscript:transcript];
+
             break;
+        }
     }
 }
 

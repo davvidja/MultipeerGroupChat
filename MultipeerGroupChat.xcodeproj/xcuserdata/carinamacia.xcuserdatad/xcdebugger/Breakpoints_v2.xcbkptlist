@@ -10,28 +10,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "AdhocGroupChat/SessionContainer.m"
-            timestampString = "437087937.493288"
+            timestampString = "437224118.142491"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "325"
-            endingLineNumber = "325"
+            startingLineNumber = "346"
+            endingLineNumber = "346"
             landmarkName = "-stream:handleEvent:"
-            landmarkType = "5">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "AdhocGroupChat/SessionContainer.m"
-            timestampString = "437139832.399241"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "252"
-            endingLineNumber = "252"
-            landmarkName = "-session:didReceiveStream:withName:fromPeer:"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>

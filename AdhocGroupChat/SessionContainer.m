@@ -249,17 +249,29 @@
 {
     NSLog(@"Received data over stream with name %@ from peer %@", streamName, peerID.displayName);
     
+    //Trying to solve the problem of not having getting the delegated calls from the NSInputStream, I explore the via that the current loop belongs to not main thread that may not live longer, unlike with the startStream for getting the NSOutputStream, that it is executed in the main thread and it is still alive.
+    
     self.dataInputStreamController = [[DataStreamController alloc] initForInputStream:stream session:session peerID:peerID];
     self.dataInputStreamController.delegate = self;
     
-//    [self.dataInputStreamController.inputStream setDelegate:self];
     [self.dataInputStreamController.inputStream setDelegate:self.dataInputStreamController];
-    [self.dataInputStreamController.inputStream scheduleInRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
+
+    
+    /*
+     * Solution to the problem that the delegated methods from the NSInputStream were never received: the problem was that this method is called in a secondary thread (different that the main one). So, when we were scheduling the inputStream to the current Run Loop, that runLoop belongs to the secondary thread, which may not live longer. So if this secondary thread ends, the events sent by the NSInputStream are never monitored and never called the delegate method stream: handleevent.
+     * So the solution is to scheduling the NSInputStream to the mainRunLoop belonging to the main thread.
+     */
+    
+    //    [self.dataInputStreamController.inputStream scheduleInRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
+    [self.dataInputStreamController.inputStream scheduleInRunLoop:[NSRunLoop mainRunLoop] forMode:NSDefaultRunLoopMode];
+    
+    
     [self.dataInputStreamController.inputStream open];
 
     Transcript *transcript = [[Transcript alloc] initWithPeerID:peerID message:@"InputStream received" direction:TRANSCRIPT_DIRECTION_LOCAL];
     [self.delegate receivedTranscript:transcript];
 }
+
 
 #pragma mark - DataStreamControllerDelegate methods
 - (void) streamEventReceived:(NSStreamEvent)eventCode inSeesson:(MCSession *)session fromPeer:(MCPeerID *)peerID addedComments:(NSString *)message

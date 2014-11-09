@@ -195,6 +195,8 @@ class DataStreamController: NSObject, NSStreamDelegate {
             println("End encountered event received")
             self.delegate!.streamEventReceived!(eventCode, inSeesson: self.session, fromPeer: self.peerID, addedComments: "Stream end encountered")
             
+            self.closeStreams()
+            
         case NSStreamEvent.ErrorOccurred:
             println("Error ocurred event received")
             self.delegate!.streamEventReceived!(eventCode, inSeesson: self.session, fromPeer: self.peerID, addedComments: "Stream error ocurred")
@@ -203,5 +205,21 @@ class DataStreamController: NSObject, NSStreamDelegate {
             println("Event received but not treated")
         }
     }
-    
+
+    private func closeStreams()
+    {
+        if (self.outputStream != nil) {
+            self.outputStream!.removeFromRunLoop(NSRunLoop.currentRunLoop(), forMode: NSDefaultRunLoopMode)
+            self.outputStream!.close()
+            self.outputStream = nil
+        }
+
+        if (self.inputStream != nil) {
+            self.inputStream!.removeFromRunLoop(NSRunLoop.currentRunLoop(), forMode: NSDefaultRunLoopMode)
+            self.inputStream!.close()
+            self.inputStream = nil
+        }
+    }
 }
+
+

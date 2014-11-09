@@ -78,9 +78,12 @@ NSString * const kNSDefaultServiceType = @"serviceTypeKey";
 // Button for executing the message send.
 @property (retain, nonatomic) IBOutlet UIBarButtonItem *sendMessageButton;
 
+@property (nonatomic) NSInteger idStream;
+
 @end
 
 @implementation MainViewController
+
 
 #pragma mark - Override super class methods
 
@@ -106,6 +109,7 @@ NSString * const kNSDefaultServiceType = @"serviceTypeKey";
     else {
         // first time running the application.  user needs to create the group chat service
         [self performSegueWithIdentifier:@"Room Create" sender:self];
+        self.idStream = 0;
     }
 }
 
@@ -340,7 +344,8 @@ NSString * const kNSDefaultServiceType = @"serviceTypeKey";
 //Action method when user presses "stream"
 - (IBAction)sendStream:(id)sender
 {
-    [self.sessionContainer startStreamWithName:@"prototypeStream"];
+    [self.sessionContainer startStreamWithName:[NSString stringWithFormat:@"%ld", (long)self.idStream]];
+    self.idStream ++;
 }
 
 #pragma mark - UIActionSheetDelegate methods

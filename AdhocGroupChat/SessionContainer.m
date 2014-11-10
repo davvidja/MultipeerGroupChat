@@ -387,6 +387,15 @@
     }
 }
 
+- (void)txByStream
+{
+    if (self.dataOutputStreamController) {
+        [self.dataOutputStreamController txByStream];
+    } else {
+        NSLog (@"You cannot tx, the outputStream has not been created");
+    }
+}
+
 
 //- (void)stream:(NSStream *)aStream handleEvent:(NSStreamEvent)eventCode {
 //    NSLog(@"Stream event received");

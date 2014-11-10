@@ -29,22 +29,23 @@ class DataStreamController: NSObject, NSStreamDelegate {
     var session: MCSession = MCSession()
     var peerID: MCPeerID = MCPeerID()
     var runLoop: NSRunLoop?
+    var hasSpaceAvailable: Bool
    
 //Initialization methods
     init (forInputStream inputStream: NSInputStream, session: MCSession, peerID: MCPeerID) {
-        super.init()
 
         self.inputStream = inputStream
         //self.fileManager = NSFileManager()
         self.session = session
         self.peerID = peerID
+        self.hasSpaceAvailable = false
         
-        
+        super.init()
+
         //settingStream(self.inputStream!)
     }
 
     init (forOutputStream outputStream: NSOutputStream, session: MCSession, peerID: MCPeerID) {
-        super.init()
 
         self.outputStream = outputStream
         //self.fileManager = NSFileManager()
@@ -53,8 +54,11 @@ class DataStreamController: NSObject, NSStreamDelegate {
 
         
         //settingStream(self.outputStream!)
+        self.hasSpaceAvailable = false
+        
+        super.init()
+        
         self.txData = getData()
-
     }
 
     func openStream (stream: NSStream){
@@ -146,7 +150,7 @@ class DataStreamController: NSObject, NSStreamDelegate {
             var buffer = UnsafeMutablePointer<UInt8>.alloc(1024)
             //var buffer: UInt8
             
-            var len: Int = 0
+            var len: Int
             len = (aStream as NSInputStream).read(buffer, maxLength: 1024)
             
             if (len != 0) {
@@ -172,33 +176,39 @@ class DataStreamController: NSObject, NSStreamDelegate {
 //            }
             
         case NSStreamEvent.HasSpaceAvailable:
-            println("Space available event received")
-
-            var buffer: UnsafeMutablePointer<UInt8>
-            
-            buffer = UnsafeMutablePointer<UInt8>(self.txData!.mutableBytes)
-            var dataLen: Int = self.txData!.length
-            var len: Int = ((dataLen - byteIndex) >= 1024) ? 1024: (dataLen - byteIndex)
-            
-            if (len > 0)
+//            println("Space available event received")
+//
+//            var buffer: UnsafeMutablePointer<UInt8>
+//            
+//            buffer = UnsafeMutablePointer<UInt8>(self.txData!.mutableBytes)
+//            var dataLen: Int = self.txData!.length
+//            var len: Int = ((dataLen - byteIndex) >= 1024) ? 1024: (dataLen - byteIndex)
+//            
+//            if (len > 0)
+//            {
+////                (aStream as NSOutputStream).write(buffer, maxLength: len)
+//                self.delegate!.streamEventReceived!(eventCode, inSeesson: self.session, fromPeer: self.peerID, addedComments: "bytes written: \(len)")
+//
+//            }
+//            
+//            // we keep the index still, to be transmitting everytime the same word
+//            byteIndex += len
+//
+//            
+////            uint8_t *readBytes = (uint8_t *)[_data mutableBytes];
+////            readBytes += byteIndex; // instance variable to move pointer
+////            int data_len = [_data length];
+////            unsigned int len = ((data_len - byteIndex >= 1024) ?
+////                1024 : (data_len-byteIndex));
+////            uint8_t buf[len];
+////            (void)memcpy(buf, readBytes, len);
+////            len = [stream write:(const uint8_t *)buf maxLength:len];
+////            byteIndex += len;
+            if (aStream == self.outputStream!)
             {
-                (aStream as NSOutputStream).write(buffer, maxLength: len)
+                self.hasSpaceAvailable = true
+                println("Stream event received: hasSpaceAvailable")
             }
-            
-            // we keep the index still, to be transmitting everytime the same word
-            byteIndex += len
-
-            self.delegate!.streamEventReceived!(eventCode, inSeesson: self.session, fromPeer: self.peerID, addedComments: "bytes written: \(len)")
-            
-//            uint8_t *readBytes = (uint8_t *)[_data mutableBytes];
-//            readBytes += byteIndex; // instance variable to move pointer
-//            int data_len = [_data length];
-//            unsigned int len = ((data_len - byteIndex >= 1024) ?
-//                1024 : (data_len-byteIndex));
-//            uint8_t buf[len];
-//            (void)memcpy(buf, readBytes, len);
-//            len = [stream write:(const uint8_t *)buf maxLength:len];
-//            byteIndex += len;
             
         case NSStreamEvent.EndEncountered:
             println("End encountered event received")
@@ -218,6 +228,26 @@ class DataStreamController: NSObject, NSStreamDelegate {
         default:
             println("Event received but not treated")
         }
+    }
+    
+    func txByStream ()
+    {
+        var buffer: UInt8 = 1
+        var bytesWritten: Int
+
+        if (self.hasSpaceAvailable)
+        {
+            bytesWritten = self.outputStream!.write(&buffer, maxLength: 1)
+            
+            self.hasSpaceAvailable = false
+        
+            println("bytes written: \(bytesWritten)")
+            
+        } else
+        {
+            println("no space available for writing into the outputStream")
+        }
+        
     }
 
     func closeStreams()

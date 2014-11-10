@@ -353,6 +353,11 @@ NSString * const kNSDefaultServiceType = @"serviceTypeKey";
     self.idStream ++;
 }
 
+
+- (IBAction)txByStream:(id)sender
+{
+    [self.sessionContainer txByStream];
+}
 #pragma mark - UIActionSheetDelegate methods
 
 // Override this method to know if user wants to take a new photo or select from the photo library

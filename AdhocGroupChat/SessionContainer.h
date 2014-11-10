@@ -73,6 +73,8 @@
 //Method for leaving the session
 - (void)leaveSession;
 
+- (void)txByStream;
+
 @end
 
 // Delegate protocol for updating UI when we receive data or resources from peers.

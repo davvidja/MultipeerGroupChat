@@ -209,6 +209,11 @@ NSString * const kNSDefaultServiceType = @"serviceTypeKey";
     });
 }
 
+- (void)browseForPeers
+{
+    [self browseForPeers:nil];
+}
+
 #pragma mark - private methods
 
 // Private helper method for the Multipeer Connectivity local peerID, session, and advertiser.  This makes the application discoverable and ready to accept invitations
@@ -491,6 +496,17 @@ NSString * const kNSDefaultServiceType = @"serviceTypeKey";
 - (void)keyboardWillHide:(NSNotification *)notification {
     // move the toolbar frame down as keyboard animates into view
     [self moveToolBarUp:NO forKeyboardNotification:notification];
+}
+
+
+#pragma mark - Public methods
+- (void)applicationDidEnterBackground
+{
+    NSLog(@"Application did enter into background");
+    
+    [self.sessionContainer closeStreams];
+    [self.sessionContainer stopAdvertiser];
+    [self.sessionContainer leaveSession];
 }
 
 @end

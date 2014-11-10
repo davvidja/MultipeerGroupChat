@@ -51,4 +51,6 @@
 
 @interface MainViewController : UITableViewController
 
+- (void)applicationDidEnterBackground;
+
 @end

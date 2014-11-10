@@ -11,6 +11,8 @@ import MultipeerConnectivity
 
 @objc protocol DataStreamControllerDelegate {
     optional func streamEventReceived (eventCode: NSStreamEvent, inSeesson session: MCSession, fromPeer peerID: MCPeerID, addedComments message: String?)
+    
+    func streamEndEncountered()
 }
 
 
@@ -26,6 +28,7 @@ class DataStreamController: NSObject, NSStreamDelegate {
     var delegate : DataStreamControllerDelegate?
     var session: MCSession = MCSession()
     var peerID: MCPeerID = MCPeerID()
+    var runLoop: NSRunLoop?
    
 //Initialization methods
     init (forInputStream inputStream: NSInputStream, session: MCSession, peerID: MCPeerID) {
@@ -51,6 +54,7 @@ class DataStreamController: NSObject, NSStreamDelegate {
         
         //settingStream(self.outputStream!)
         self.txData = getData()
+
     }
 
     func openStream (stream: NSStream){
@@ -140,15 +144,20 @@ class DataStreamController: NSObject, NSStreamDelegate {
             println("Bytes available event received")
             
             var buffer = UnsafeMutablePointer<UInt8>.alloc(1024)
+            //var buffer: UInt8
+            
+            buffer[0] = 1
+            buffer[1] = 2
+            buffer[2] = 3
             
             var len: Int = 0
             len = (aStream as NSInputStream).read(buffer, maxLength: 1024)
             
             if (len != 0) {
-                self.rxData!.appendBytes(buffer, length: len)
+                self.rxData!.appendBytes(&buffer, length: len)
                 bytesRead += len
             } else {
-                NSLog("No buffer!")
+                NSLog("No data read!")
             }
             
             self.delegate!.streamEventReceived!(eventCode, inSeesson: self.session, fromPeer: self.peerID, addedComments: "bytes read: \(len)")
@@ -175,8 +184,12 @@ class DataStreamController: NSObject, NSStreamDelegate {
             var dataLen: Int = self.txData!.length
             var len: Int = ((dataLen - byteIndex) >= 1024) ? 1024: (dataLen - byteIndex)
             
-            (aStream as NSOutputStream).write(buffer, maxLength: len)
+            if (len > 0)
+            {
+                (aStream as NSOutputStream).write(buffer, maxLength: len)
+            }
             
+            // we keep the index still, to be transmitting everytime the same word
             byteIndex += len
 
             self.delegate!.streamEventReceived!(eventCode, inSeesson: self.session, fromPeer: self.peerID, addedComments: "bytes written: \(len)")
@@ -193,9 +206,14 @@ class DataStreamController: NSObject, NSStreamDelegate {
             
         case NSStreamEvent.EndEncountered:
             println("End encountered event received")
-            self.delegate!.streamEventReceived!(eventCode, inSeesson: self.session, fromPeer: self.peerID, addedComments: "Stream end encountered")
             
             self.closeStreams()
+            
+            self.delegate!.streamEventReceived!(eventCode, inSeesson: self.session, fromPeer: self.peerID, addedComments: "Stream end encountered")
+            
+            self.delegate!.streamEndEncountered()
+            
+            
             
         case NSStreamEvent.ErrorOccurred:
             println("Error ocurred event received")
@@ -206,7 +224,7 @@ class DataStreamController: NSObject, NSStreamDelegate {
         }
     }
 
-    private func closeStreams()
+    func closeStreams()
     {
         if (self.outputStream != nil) {
             self.outputStream!.removeFromRunLoop(NSRunLoop.currentRunLoop(), forMode: NSDefaultRunLoopMode)

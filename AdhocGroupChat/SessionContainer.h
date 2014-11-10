@@ -66,6 +66,12 @@
 - (Transcript *)sendImage:(NSURL *)imageUrl;
 //Method for starting a byte stream
 - (void)startStreamWithName:(NSString *)streamName;
+//Method for closing the open Streams
+- (void)closeStreams;
+//Method for stopping the advertiser
+- (void)stopAdvertiser;
+//Method for leaving the session
+- (void)leaveSession;
 
 @end
 
@@ -76,5 +82,7 @@
 - (void)receivedTranscript:(Transcript *)transcript;
 // Method used to signal to UI an image resource transfer (send or receive) has completed
 - (void)updateTranscript:(Transcript *)transcript;
+// Method used to signal to UI that has to browse again for peers because the stream connection has been lost
+- (void)browseForPeers;
 
 @end

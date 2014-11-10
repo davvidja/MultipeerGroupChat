@@ -85,8 +85,11 @@
 // On dealloc we should clean up the session by disconnecting from it.
 - (void)dealloc
 {
-    [_advertiserAssistant stop];
-    [_session disconnect];
+    [self closeStreams];
+    [self stopAdvertiser];
+    [self leaveSession];
+//    [_advertiserAssistant stop];
+//    [_session disconnect];
 }
 
 // Helper method for human readable printing of MCSessionState.  This state is per peer.
@@ -185,6 +188,20 @@
 - (void)session:(MCSession *)session peer:(MCPeerID *)peerID didChangeState:(MCSessionState)state
 {
     NSLog(@"Peer [%@] changed state to %@", peerID.displayName, [self stringForPeerConnectionState:state]);
+    
+    switch (state) {
+        case MCSessionStateNotConnected:
+            [self closeStreams];
+            [self.delegate browseForPeers];
+            
+            break;
+            
+        default:
+            break;
+    }
+    
+    
+    
 
     NSString *adminMessage = [NSString stringWithFormat:@"'%@' is %@", peerID.displayName, [self stringForPeerConnectionState:state]];
     // Create an local transcript
@@ -333,9 +350,47 @@
     }
 }
 
-- (void)stream:(NSStream *)aStream handleEvent:(NSStreamEvent)eventCode {
-    NSLog(@"Stream event received");
+- (void) streamEndEncountered
+{
+    [self.delegate browseForPeers];
 }
+
+
+#pragma mark - Public methods
+
+
+- (void)closeStreams
+{
+    if (self.dataInputStreamController !=nil) {
+        NSLog(@"Closing inputStream");
+        [self.dataInputStreamController closeStreams];
+    }
+    
+    if (self.dataOutputStreamController !=nil) {
+        NSLog(@"Closing outputStream");
+        [self.dataOutputStreamController closeStreams];
+    }
+}
+
+- (void)stopAdvertiser
+{
+    if (self.advertiserAssistant != nil)
+    {
+        [self.advertiserAssistant stop];
+    }
+}
+
+- (void)leaveSession
+{
+    if (self.session) {
+        [self.session disconnect];
+    }
+}
+
+
+//- (void)stream:(NSStream *)aStream handleEvent:(NSStreamEvent)eventCode {
+//    NSLog(@"Stream event received");
+//}
 
 
 @end

@@ -146,10 +146,6 @@ class DataStreamController: NSObject, NSStreamDelegate {
             var buffer = UnsafeMutablePointer<UInt8>.alloc(1024)
             //var buffer: UInt8
             
-            buffer[0] = 1
-            buffer[1] = 2
-            buffer[2] = 3
-            
             var len: Int = 0
             len = (aStream as NSInputStream).read(buffer, maxLength: 1024)
             

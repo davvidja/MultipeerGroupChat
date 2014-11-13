@@ -163,20 +163,21 @@
     
 #warning if we have several peers conected, how do we manage it? do we create different outputStreams? Having a dictionary with key the peerID and value the outputStream itself?
     for (MCPeerID *peerID in _session.connectedPeers) {
+        NSLog(@"PeerID: %@", peerID.displayName);
         outputStream = [self.session startStreamWithName:streamName toPeer:peerID error:&error];
         
         if (error){
             NSLog(@"Start stream to peer [%@] completed with Error [%@]", peerID.displayName, error);
         } else {
-            self.dataOutputStreamController = [[DataStreamController alloc] initForOutputStream:outputStream session:self.session peerID:peerID];
+            self.dataOutputStreamController = [[DataStreamController alloc] initForOutputStream:outputStream session:self.session peerID:_session.myPeerID];
             self.dataOutputStreamController.delegate = self;
             
             [self.dataOutputStreamController.outputStream setDelegate:self.dataOutputStreamController];
             [self.dataOutputStreamController.outputStream scheduleInRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
             [self.dataOutputStreamController.outputStream open];
             
-            Transcript *transcript = [[Transcript alloc] initWithPeerID:peerID message:@"OutputStream received" direction:TRANSCRIPT_DIRECTION_LOCAL];
-            [self.delegate receivedTranscript:transcript];
+         /*   Transcript *transcript = [[Transcript alloc] initWithPeerID:peerID message:@"OutputStream received" direction:TRANSCRIPT_DIRECTION_LOCAL];
+            [self.delegate receivedTranscript:transcript];*/
 
         }
     }
@@ -284,9 +285,9 @@
     
     
     [self.dataInputStreamController.inputStream open];
-
+    /*
     Transcript *transcript = [[Transcript alloc] initWithPeerID:peerID message:@"InputStream received" direction:TRANSCRIPT_DIRECTION_LOCAL];
-    [self.delegate receivedTranscript:transcript];
+    [self.delegate receivedTranscript:transcript];*/
 }
 
 

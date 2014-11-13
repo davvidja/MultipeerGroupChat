@@ -249,7 +249,7 @@
 				ORGANIZATIONNAME = "Apple, Inc.";
 				TargetAttributes = {
 					7AEDCFC0174695EA00947F1C = {
-						DevelopmentTeam = Z56L93DB2S;
+						DevelopmentTeam = 4B63Q72BVU;
 					};
 				};
 			};

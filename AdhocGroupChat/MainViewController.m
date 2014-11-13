@@ -353,6 +353,24 @@ NSString * const kNSDefaultServiceType = @"serviceTypeKey";
     self.idStream ++;
 }
 
+//Action method when user presses "connected peers"
+//It prints in the log the list of the current connected peers
+- (IBAction)disconnectMyPeer:(id)sender
+{
+    MCSession *session = self.sessionContainer.session;
+    
+    if (session != nil) {
+        for (MCPeerID *peerId in session.connectedPeers)
+        {
+            NSLog(@"Nearby Peer: %@", peerId.displayName);
+        }
+        
+        NSLog(@"Disconnecting my Peer: %@ from the session", session.myPeerID);
+        
+        [session disconnect];
+    }
+}
+
 
 - (IBAction)txByStream:(id)sender
 {

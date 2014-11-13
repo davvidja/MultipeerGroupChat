@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6245" systemVersion="13F34" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" initialViewController="5Gf-aK-ice">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6250" systemVersion="13F34" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" initialViewController="5Gf-aK-ice">
     <dependencies>
+        <deployment identifier="iOS"/>
         <development version="5000" identifier="xcode"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6238"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6244"/>
     </dependencies>
     <scenes>
         <!--Create Room-->
@@ -183,11 +184,22 @@
                         </barButtonItem>
                     </toolbarItems>
                     <navigationItem key="navigationItem" id="CQr-ik-YQF">
+                        <nil key="title"/>
                         <barButtonItem key="leftBarButtonItem" systemItem="search" id="MeR-uq-xUn">
                             <connections>
                                 <action selector="browseForPeers:" destination="p9r-Z3-7FD" id="YLn-Pb-zYM"/>
                             </connections>
                         </barButtonItem>
+                        <button key="titleView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="Edr-Xz-rsx">
+                            <rect key="frame" x="96" y="7" width="128" height="30"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <state key="normal" title="Disconnect">
+                                <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                            </state>
+                            <connections>
+                                <action selector="disconnectMyPeer:" destination="p9r-Z3-7FD" eventType="touchDown" id="l1u-fp-n2O"/>
+                            </connections>
+                        </button>
                         <barButtonItem key="rightBarButtonItem" id="fu8-5o-ZrU">
                             <button key="customView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="infoLight" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" id="M1u-YB-eDx">
                                 <rect key="frame" x="282" y="11" width="22" height="22"/>
@@ -214,7 +226,7 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="SmB-Rt-BYS" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="846" y="32"/>
+            <point key="canvasLocation" x="801" y="32"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="UHk-fx-bRU">
@@ -245,6 +257,6 @@
         <simulatedScreenMetrics key="destination" type="retina4"/>
     </simulatedMetricsContainer>
     <inferredMetricsTieBreakers>
-        <segue reference="5Rt-Sa-B7y"/>
+        <segue reference="81P-4G-Qwq"/>
     </inferredMetricsTieBreakers>
 </document>

@@ -58,7 +58,7 @@ class DataStreamController: NSObject, NSStreamDelegate {
         
         super.init()
         
-        self.txData = getData()
+        //self.txData = getData()
     }
 
     func openStream (stream: NSStream){

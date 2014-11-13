@@ -160,11 +160,17 @@
 {
     NSOutputStream *outputStream;
     NSError *error;
+    NSInteger counter;
     
 #warning if we have several peers conected, how do we manage it? do we create different outputStreams? Having a dictionary with key the peerID and value the outputStream itself?
+
+    NSLog(@"Starting Stream. Number of peers connected to session: %d", self.session.connectedPeers.count);
+    
+    counter = 0;
+    
     for (MCPeerID *peerID in _session.connectedPeers) {
-        NSLog(@"PeerID: %@", peerID.displayName);
-        outputStream = [self.session startStreamWithName:streamName toPeer:peerID error:&error];
+        NSLog(@"Starting outputStream to PeerID: %@. Nearby peerID hash value: %ld. The local device has the PeerID: %@.", peerID.displayName, peerID.hash, self.session.myPeerID.displayName);
+        outputStream = [self.session startStreamWithName:@"stream" toPeer:peerID error:&error];
         
         if (error){
             NSLog(@"Start stream to peer [%@] completed with Error [%@]", peerID.displayName, error);
@@ -176,11 +182,15 @@
             [self.dataOutputStreamController.outputStream scheduleInRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
             [self.dataOutputStreamController.outputStream open];
             
+            counter ++;
+            
          /*   Transcript *transcript = [[Transcript alloc] initWithPeerID:peerID message:@"OutputStream received" direction:TRANSCRIPT_DIRECTION_LOCAL];
             [self.delegate receivedTranscript:transcript];*/
 
         }
     }
+    
+    NSLog(@"Strating stream: number of streams started %ld", (long)counter);
 }
 
 #pragma mark - MCSessionDelegate methods
@@ -268,23 +278,27 @@
     NSLog(@"Received data over stream with name %@ from peer %@", streamName, peerID.displayName);
     
     //Trying to solve the problem of not having getting the delegated calls from the NSInputStream, I explore the via that the current loop belongs to not main thread that may not live longer, unlike with the startStream for getting the NSOutputStream, that it is executed in the main thread and it is still alive.
+
     
     self.dataInputStreamController = [[DataStreamController alloc] initForInputStream:stream session:session peerID:peerID];
     self.dataInputStreamController.delegate = self;
     
     [self.dataInputStreamController.inputStream setDelegate:self.dataInputStreamController];
 
-    
+
     /*
      * Solution to the problem that the delegated methods from the NSInputStream were never received: the problem was that this method is called in a secondary thread (different that the main one). So, when we were scheduling the inputStream to the current Run Loop, that runLoop belongs to the secondary thread, which may not live longer. So if this secondary thread ends, the events sent by the NSInputStream are never monitored and never called the delegate method stream: handleevent.
      * So the solution is to scheduling the NSInputStream to the mainRunLoop belonging to the main thread.
      */
     
     //    [self.dataInputStreamController.inputStream scheduleInRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
+    
+
     [self.dataInputStreamController.inputStream scheduleInRunLoop:[NSRunLoop mainRunLoop] forMode:NSDefaultRunLoopMode];
     
     
     [self.dataInputStreamController.inputStream open];
+
     /*
     Transcript *transcript = [[Transcript alloc] initWithPeerID:peerID message:@"InputStream received" direction:TRANSCRIPT_DIRECTION_LOCAL];
     [self.delegate receivedTranscript:transcript];*/
@@ -306,6 +320,8 @@
             [finalMessage appendString:@"Stream open is completed"];
             [finalMessage appendString:message];
             
+            NSLog(@">Stream event message: %@", finalMessage);
+            
             Transcript *transcript = [[Transcript alloc] initWithPeerID:peerID message:finalMessage direction:TRANSCRIPT_DIRECTION_LOCAL];
             [self.delegate receivedTranscript:transcript];
             
@@ -319,6 +335,8 @@
             [finalMessage appendString:@"Space availabe in Stream, writing "];
             [finalMessage appendString:message];
             
+            NSLog(@">Stream event message: %@", finalMessage);
+            
             Transcript *transcript = [[Transcript alloc] initWithPeerID:peerID message:finalMessage direction:TRANSCRIPT_DIRECTION_LOCAL];
             [self.delegate receivedTranscript:transcript];
 
@@ -331,6 +349,8 @@
             [finalMessage appendString:@"Bytes availabes in Stream, reading "];
             [finalMessage appendString:message];
             
+            NSLog(@">Stream event message: %@", finalMessage);
+            
             Transcript *transcript = [[Transcript alloc] initWithPeerID:peerID message:finalMessage direction:TRANSCRIPT_DIRECTION_LOCAL];
             [self.delegate receivedTranscript:transcript];
 
@@ -342,6 +362,8 @@
             
             [finalMessage appendString:@"Stream generic message: "];
             [finalMessage appendString:message];
+            
+            NSLog(@">Stream event message: %@", finalMessage);
             
             Transcript *transcript = [[Transcript alloc] initWithPeerID:peerID message:finalMessage direction:TRANSCRIPT_DIRECTION_LOCAL];
             [self.delegate receivedTranscript:transcript];

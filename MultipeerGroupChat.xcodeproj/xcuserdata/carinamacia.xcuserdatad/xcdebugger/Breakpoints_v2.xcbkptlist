@@ -58,12 +58,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "AdhocGroupChat/DataStreamController.swift"
-            timestampString = "437335250.924668"
+            timestampString = "437353040.604416"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "255"
-            endingLineNumber = "255"
-            landmarkName = "closeStreams()"
+            startingLineNumber = "253"
+            endingLineNumber = "253"
+            landmarkName = "txByStream()"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
@@ -218,11 +218,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "AdhocGroupChat/DataStreamController.swift"
-            timestampString = "437335141.494177"
+            timestampString = "437338185.00633"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "235"
-            endingLineNumber = "235"
+            startingLineNumber = "247"
+            endingLineNumber = "247"
             landmarkName = "txByStream()"
             landmarkType = "5">
          </BreakpointContent>

@@ -58,7 +58,7 @@ class DataStreamController: NSObject, NSStreamDelegate {
         
         super.init()
         
-        self.txData = getData()
+        //self.txData = getData()
     }
 
     func openStream (stream: NSStream){
@@ -243,6 +243,11 @@ class DataStreamController: NSObject, NSStreamDelegate {
         
             println("bytes written: \(bytesWritten)")
             
+            var dataWritten: NSData
+            var buffer: UnsafePointer<UInt8>
+            
+            dataWritten = self.outputStream!.propertyForKey(NSStreamDataWrittenToMemoryStreamKey) as NSData
+                        
         } else
         {
             println("no space available for writing into the outputStream")

@@ -57,6 +57,8 @@
 
 @property (readonly, nonatomic) MCSession *session;
 @property (assign, nonatomic) id<SessionContainerDelegate> delegate;
+@property (nonatomic, strong, readwrite) NSOutputStream *outputStream;
+@property (nonatomic, strong, readwrite) NSInputStream *inputStream;
 
 // Designated initializer
 - (id)initWithDisplayName:(NSString *)displayName serviceType:(NSString *)serviceType;

@@ -170,18 +170,24 @@
     
     for (MCPeerID *peerID in _session.connectedPeers) {
         NSLog(@"Starting outputStream to PeerID: %@. Nearby peerID hash value: %ld. The local device has the PeerID: %@.", peerID.displayName, peerID.hash, self.session.myPeerID.displayName);
-        outputStream = [self.session startStreamWithName:@"stream" toPeer:peerID error:&error];
-        
+//        outputStream = [self.session startStreamWithName:@"stream" toPeer:peerID error:&error];
+        self.outputStream = [self.session startStreamWithName:@"stream" toPeer:peerID error:&error];
+
         if (error){
             NSLog(@"Start stream to peer [%@] completed with Error [%@]", peerID.displayName, error);
         } else {
-            self.dataOutputStreamController = [[DataStreamController alloc] initForOutputStream:outputStream session:self.session peerID:_session.myPeerID];
-            self.dataOutputStreamController.delegate = self;
+//            self.dataOutputStreamController = [[DataStreamController alloc] initForOutputStream:outputStream session:self.session peerID:_session.myPeerID];
+//            self.dataOutputStreamController.delegate = self;
+//            
+//            [self.dataOutputStreamController.outputStream setDelegate:self.dataOutputStreamController];
+//            [self.dataOutputStreamController.outputStream setDelegate:self];
+//            [self.dataOutputStreamController.outputStream scheduleInRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
+//            [self.dataOutputStreamController.outputStream open];
             
-            [self.dataOutputStreamController.outputStream setDelegate:self.dataOutputStreamController];
-            [self.dataOutputStreamController.outputStream scheduleInRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
-            [self.dataOutputStreamController.outputStream open];
-            
+            [self.outputStream setDelegate:self];
+            [self.outputStream scheduleInRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
+            [self.outputStream open];
+//            
             counter ++;
             
          /*   Transcript *transcript = [[Transcript alloc] initWithPeerID:peerID message:@"OutputStream received" direction:TRANSCRIPT_DIRECTION_LOCAL];
@@ -202,6 +208,7 @@
     
     switch (state) {
         case MCSessionStateNotConnected:
+            NSLog(@"Current number of peers connected: %ld", (unsigned long)self.session.connectedPeers.count);
             [self closeStreams];
             [self.delegate browseForPeers];
             
@@ -280,10 +287,16 @@
     //Trying to solve the problem of not having getting the delegated calls from the NSInputStream, I explore the via that the current loop belongs to not main thread that may not live longer, unlike with the startStream for getting the NSOutputStream, that it is executed in the main thread and it is still alive.
 
     
-    self.dataInputStreamController = [[DataStreamController alloc] initForInputStream:stream session:session peerID:peerID];
-    self.dataInputStreamController.delegate = self;
+//    self.dataInputStreamController = [[DataStreamController alloc] initForInputStream:stream session:session peerID:peerID];
+//    self.dataInputStreamController.delegate = self;
+//    
+//    [self.dataInputStreamController.inputStream setDelegate:self.dataInputStreamController];
     
-    [self.dataInputStreamController.inputStream setDelegate:self.dataInputStreamController];
+    self.inputStream = stream;
+    
+    self.inputStream.delegate = self;
+    [self.inputStream scheduleInRunLoop:[NSRunLoop mainRunLoop] forMode:NSDefaultRunLoopMode];
+    [self.inputStream open];
 
 
     /*
@@ -291,13 +304,23 @@
      * So the solution is to scheduling the NSInputStream to the mainRunLoop belonging to the main thread.
      */
     
-    //    [self.dataInputStreamController.inputStream scheduleInRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
-    
+//    [self.dataInputStreamController.inputStream scheduleInRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
+//    [self.dataInputStreamController.inputStream scheduleInRunLoop:[NSRunLoop mainRunLoop] forMode:NSDefaultRunLoopMode];
+//    
+//    [self.dataInputStreamController.inputStream open];
 
-    [self.dataInputStreamController.inputStream scheduleInRunLoop:[NSRunLoop mainRunLoop] forMode:NSDefaultRunLoopMode];
+    
+//    dispatch_async(dispatch_get_main_queue(), ^{
+//        self.dataInputStreamController = [[DataStreamController alloc] initForInputStream:stream session:session peerID:peerID];
+//        self.dataInputStreamController.delegate = self;
+//        
+//        [self.dataInputStreamController.inputStream setDelegate:self.dataInputStreamController];
+//
+//        [self.dataInputStreamController.inputStream scheduleInRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
+//        [self.dataInputStreamController.inputStream open];
+//    });
     
     
-    [self.dataInputStreamController.inputStream open];
 
     /*
     Transcript *transcript = [[Transcript alloc] initWithPeerID:peerID message:@"InputStream received" direction:TRANSCRIPT_DIRECTION_LOCAL];
@@ -420,9 +443,9 @@
 }
 
 
-//- (void)stream:(NSStream *)aStream handleEvent:(NSStreamEvent)eventCode {
-//    NSLog(@"Stream event received");
-//}
+- (void)stream:(NSStream *)aStream handleEvent:(NSStreamEvent)eventCode {
+    NSLog(@"Stream event received");
+}
 
 
 @end

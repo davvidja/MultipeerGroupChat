@@ -153,7 +153,7 @@ class DataStreamController: NSObject, NSStreamDelegate {
             var len: Int
             len = (aStream as NSInputStream).read(buffer, maxLength: 1024)
             
-            if (len != 0) {
+            if (len > 0) {
                 self.rxData!.appendBytes(&buffer, length: len)
                 bytesRead += len
             } else {

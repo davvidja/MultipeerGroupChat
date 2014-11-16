@@ -161,6 +161,10 @@ class DataStreamController: NSObject, NSStreamDelegate {
             len = (aStream as NSInputStream).read(buffer, maxLength: 1024)
             
             if (len > 0) {
+                if (self.rxData == nil)
+                {
+                    self.rxData = NSMutableData(capacity: len)
+                }
                 self.rxData!.appendBytes(&buffer, length: len)
                 bytesRead += len
             } else {

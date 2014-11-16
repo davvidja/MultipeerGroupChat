@@ -57,8 +57,8 @@
 @property (retain, nonatomic) MCAdvertiserAssistant *advertiserAssistant;
 
 //Properties responsible of managining the data streammed through the NSStreams created with startStream method of MCSession
-@property (retain, nonatomic) DataStreamController *dataOutputStreamController;
-@property (retain, nonatomic) DataStreamController *dataInputStreamController;
+@property (strong, nonatomic) DataStreamController *dataOutputStreamController;
+@property (strong, nonatomic) DataStreamController *dataInputStreamController;
 
 @end
 
@@ -71,9 +71,9 @@
         // Create the peer ID with user input display name.  This display name will be seen by other browsing peers
         MCPeerID *peerID = [[MCPeerID alloc] initWithDisplayName:displayName];
         // Create the session that peers will be invited/join into.  You can provide an optinal security identity for custom authentication.  Also you can set the encryption preference for the session.
-        _session = [[MCSession alloc] initWithPeer:peerID securityIdentity:nil encryptionPreference:MCEncryptionRequired];
+        self.session = [[MCSession alloc] initWithPeer:peerID securityIdentity:nil encryptionPreference:MCEncryptionRequired];
         // Set ourselves as the MCSessionDelegate
-        _session.delegate = self;
+        self.session.delegate = self;
         // Create the advertiser assistant for managing incoming invitation
         _advertiserAssistant = [[MCAdvertiserAssistant alloc] initWithServiceType:serviceType discoveryInfo:nil session:_session];
         // Start the assistant to begin advertising your peers availability
@@ -170,29 +170,24 @@
     
     for (MCPeerID *peerID in _session.connectedPeers) {
         NSLog(@"Starting outputStream to PeerID: %@. Nearby peerID hash value: %ld. The local device has the PeerID: %@.", peerID.displayName, peerID.hash, self.session.myPeerID.displayName);
-//        outputStream = [self.session startStreamWithName:@"stream" toPeer:peerID error:&error];
         self.outputStream = [self.session startStreamWithName:@"stream" toPeer:peerID error:&error];
 
         if (error){
             NSLog(@"Start stream to peer [%@] completed with Error [%@]", peerID.displayName, error);
         } else {
-//            self.dataOutputStreamController = [[DataStreamController alloc] initForOutputStream:outputStream session:self.session peerID:_session.myPeerID];
-//            self.dataOutputStreamController.delegate = self;
-//            
-//            [self.dataOutputStreamController.outputStream setDelegate:self.dataOutputStreamController];
-//            [self.dataOutputStreamController.outputStream setDelegate:self];
-//            [self.dataOutputStreamController.outputStream scheduleInRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
-//            [self.dataOutputStreamController.outputStream open];
-            
-            [self.outputStream setDelegate:self];
-            [self.outputStream scheduleInRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
-            [self.outputStream open];
-//            
-            counter ++;
-            
-         /*   Transcript *transcript = [[Transcript alloc] initWithPeerID:peerID message:@"OutputStream received" direction:TRANSCRIPT_DIRECTION_LOCAL];
-            [self.delegate receivedTranscript:transcript];*/
 
+            self.dataOutputStreamController = [[DataStreamController alloc] init];
+            self.dataOutputStreamController.session = self.session;
+            
+            self.dataOutputStreamController.peerID = self.session.myPeerID;
+            self.dataOutputStreamController.outputStream = self.outputStream;
+            
+            self.dataOutputStreamController.delegate = self;
+            self.dataOutputStreamController.outputStream.delegate = self.dataOutputStreamController;
+            [self.dataOutputStreamController.outputStream scheduleInRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
+            [self.dataOutputStreamController.outputStream open];
+            
+            counter ++;
         }
     }
     
@@ -292,11 +287,25 @@
 //    
 //    [self.dataInputStreamController.inputStream setDelegate:self.dataInputStreamController];
     
+//    self.inputStream = stream;
+//    
+//    self.inputStream.delegate = self;
+//    [self.inputStream scheduleInRunLoop:[NSRunLoop mainRunLoop] forMode:NSDefaultRunLoopMode];
+//    [self.inputStream open];
+    
     self.inputStream = stream;
     
-    self.inputStream.delegate = self;
-    [self.inputStream scheduleInRunLoop:[NSRunLoop mainRunLoop] forMode:NSDefaultRunLoopMode];
-    [self.inputStream open];
+    self.dataInputStreamController = [[DataStreamController alloc] init];
+    self.dataInputStreamController.session = self.session;
+    self.dataInputStreamController.peerID = peerID;
+    self.dataInputStreamController.inputStream = self.inputStream;
+    
+    self.dataInputStreamController.delegate = self;
+    self.dataInputStreamController.inputStream.delegate = self.dataInputStreamController;
+    [self.dataInputStreamController.inputStream scheduleInRunLoop:[NSRunLoop mainRunLoop] forMode:NSDefaultRunLoopMode];
+    [self.dataInputStreamController.inputStream open];
+
+    
 
 
     /*

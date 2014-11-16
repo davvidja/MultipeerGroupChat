@@ -26,12 +26,19 @@ class DataStreamController: NSObject, NSStreamDelegate {
     var byteIndex = 0
     var bytesRead = 0
     var delegate : DataStreamControllerDelegate?
-    var session: MCSession = MCSession()
-    var peerID: MCPeerID = MCPeerID()
+    var session: MCSession?
+    var peerID: MCPeerID?
     var runLoop: NSRunLoop?
     var hasSpaceAvailable: Bool
    
 //Initialization methods
+    override init() {
+        self.hasSpaceAvailable = false
+        
+        super.init()
+    }
+
+    
     init (forInputStream inputStream: NSInputStream, session: MCSession, peerID: MCPeerID) {
 
         self.inputStream = inputStream
@@ -141,7 +148,7 @@ class DataStreamController: NSObject, NSStreamDelegate {
         switch eventCode {
         case NSStreamEvent.OpenCompleted:
             println("Open completed event received")
-            self.delegate!.streamEventReceived!(eventCode, inSeesson: self.session, fromPeer: self.peerID, addedComments: nil)
+            self.delegate!.streamEventReceived!(eventCode, inSeesson: self.session!, fromPeer: self.peerID!, addedComments: nil)
 
         
         case NSStreamEvent.HasBytesAvailable:
@@ -160,7 +167,7 @@ class DataStreamController: NSObject, NSStreamDelegate {
                 NSLog("No data read!")
             }
             
-            self.delegate!.streamEventReceived!(eventCode, inSeesson: self.session, fromPeer: self.peerID, addedComments: "bytes read: \(len)")
+            self.delegate!.streamEventReceived!(eventCode, inSeesson: self.session!, fromPeer: self.peerID!, addedComments: "bytes read: \(len)")
 //            if(!_data) {
 //                _data = [[NSMutableData data] retain];
 //            }
@@ -176,7 +183,7 @@ class DataStreamController: NSObject, NSStreamDelegate {
 //            }
             
         case NSStreamEvent.HasSpaceAvailable:
-//            println("Space available event received")
+              println("Space available event received")
 //
 //            var buffer: UnsafeMutablePointer<UInt8>
 //            
@@ -215,7 +222,7 @@ class DataStreamController: NSObject, NSStreamDelegate {
             
             self.closeStreams()
             
-            self.delegate!.streamEventReceived!(eventCode, inSeesson: self.session, fromPeer: self.peerID, addedComments: "Stream end encountered")
+            self.delegate!.streamEventReceived!(eventCode, inSeesson: self.session!, fromPeer: self.peerID!, addedComments: "Stream end encountered")
             
             self.delegate!.streamEndEncountered()
             
@@ -223,7 +230,7 @@ class DataStreamController: NSObject, NSStreamDelegate {
             
         case NSStreamEvent.ErrorOccurred:
             println("Error ocurred event received")
-            self.delegate!.streamEventReceived!(eventCode, inSeesson: self.session, fromPeer: self.peerID, addedComments: "Stream error ocurred")
+            self.delegate!.streamEventReceived!(eventCode, inSeesson: self.session!, fromPeer: self.peerID!, addedComments: "Stream error ocurred")
 
         default:
             println("Event received but not treated")

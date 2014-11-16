@@ -55,7 +55,7 @@
 // Container utility class for managing MCSession state, API calls, and it's delegate callbacks
 @interface SessionContainer : NSObject <MCSessionDelegate, DataStreamControllerDelegate, NSStreamDelegate>
 
-@property (readonly, nonatomic) MCSession *session;
+@property (strong, nonatomic) MCSession *session;
 @property (assign, nonatomic) id<SessionContainerDelegate> delegate;
 @property (nonatomic, strong, readwrite) NSOutputStream *outputStream;
 @property (nonatomic, strong, readwrite) NSInputStream *inputStream;
